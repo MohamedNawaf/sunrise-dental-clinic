@@ -1,6 +1,6 @@
 package dao;
 
-import model.Appointment;
+import model.AppointmentDTO;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,9 +12,18 @@ public class AppointmentDAOTest {
 
         // To generate a Random number
         int randomNum = (int)(Math.random() * 100000);
-        String uniqueAptNo = "APT-" + randomNum;
+        String uniqueAptNo = "APT-TEST-" + randomNum;
 
-        Appointment newApt = new Appointment(0, uniqueAptNo, 1, 1, 1, "2026-11-20", "14:00:00", "SCHEDULED");
+        // Populate data using the new AppointmentDTO
+        AppointmentDTO newApt = new AppointmentDTO();
+        newApt.appointmentNumber = uniqueAptNo;
+        newApt.patientName = "Test Patient";
+        newApt.contactNumber = "0711122334";
+        newApt.address = "123 Test Road, Colombo";
+        newApt.dentistId = 1;
+        newApt.treatmentId = 1;
+        newApt.appointmentDate = "2026-11-20";
+        newApt.appointmentTime = "14:00:00";
 
         // Assert that the insertion returns true (success)
         boolean isRegistered = dao.registerAppointment(newApt);
