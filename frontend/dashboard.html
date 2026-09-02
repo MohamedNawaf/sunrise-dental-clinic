@@ -93,12 +93,50 @@
             <!-- Other sections (Hidden by default, will build later) -->
             <div id="searchSection" class="content-section" style="display: none;">
                 <h2>Search Appointment Details</h2>
-                <p>Search functionality will be implemented here.</p>
+                <div class="form-row" style="margin-bottom: 20px;">
+                    <div class="input-group">
+                        <input type="text" id="searchAptNo" placeholder="Enter Appointment Number (e.g., APT-2026-0001)">
+                    </div>
+                    <button class="btn-primary" onclick="searchAppointment()" style="width: auto; padding: 10px 20px; height: 42px; margin-top: 26px;">Search</button>
+                </div>
+                
+                <!-- Results Container -->
+                <div id="searchResults" style="display: none; background: #e8f4f8; padding: 20px; border-radius: 8px; border-left: 5px solid #3498db;">
+                    <h3 style="margin-bottom: 15px; color: #2c3e50;">Appointment Information</h3>
+                    <p><strong>Patient Name:</strong> <span id="resPatientName"></span></p>
+                    <p><strong>Contact:</strong> <span id="resContact"></span></p>
+                    <p><strong>Address:</strong> <span id="resAddress"></span></p>
+                    <p><strong>Dentist:</strong> <span id="resDentist"></span></p>
+                    <p><strong>Treatment:</strong> <span id="resTreatment"></span></p>
+                    <p><strong>Date & Time:</strong> <span id="resDateTime"></span></p>
+                    <p><strong>Status:</strong> <span id="resStatus" style="font-weight: bold; color: #e67e22;"></span></p>
+                </div>
             </div>
             
             <div id="billingSection" class="content-section" style="display: none;">
                 <h2>Calculate & Print Bill</h2>
-                <p>Billing functionality will be implemented here.</p>
+                <div class="form-row" style="margin-bottom: 20px;">
+                    <div class="input-group">
+                        <input type="text" id="billAptNo" placeholder="Enter Appointment Number (e.g., APT-2026-0001)">
+                    </div>
+                    <button class="btn-primary" onclick="generateBill()" style="width: auto; padding: 10px 20px; height: 42px; margin-top: 26px;">Generate Bill</button>
+                </div>
+
+                <!-- Printable Invoice Area -->
+                <div id="invoiceArea" style="display: none; background: white; padding: 30px; border: 1px solid #ccc; max-width: 500px; margin: 0 auto;">
+                    <h2 style="text-align: center; color: #2c3e50; border-bottom: none;">SUNRISE DENTAL CLINIC</h2>
+                    <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">No 12, Galle Road, Colombo | Tel: 011 234 5678</p>
+                    <hr style="margin-bottom: 20px;">
+                    <p><strong>Invoice No:</strong> <span id="invNumber"></span></p>
+                    <p><strong>Appt No:</strong> <span id="invAptNumber"></span></p>
+                    <p><strong>Date:</strong> <span id="invDate"></span></p>
+                    <hr style="margin: 20px 0;">
+                    <h3 style="text-align: right; color: #e74c3c;">Total Amount: LKR <span id="invTotal"></span></h3>
+                    <hr style="margin: 20px 0;">
+                    <p style="text-align: center; font-size: 12px;">Thank you for trusting Sunrise Dental Clinic!</p>
+                    
+                    <button onclick="window.print()" class="btn-primary" style="margin-top: 20px; width: 100%; background-color: #27ae60;">Print Receipt</button>
+                </div>
             </div>
 
             <div id="helpSection" class="content-section" style="display: none;">

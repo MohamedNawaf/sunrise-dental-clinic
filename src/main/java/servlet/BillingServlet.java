@@ -1,37 +1,48 @@
 package servlet;
 
 import dao.BillingDAO;
+import model.BillDTO;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 
 @WebServlet("/api/billing")
 public class BillingServlet extends HttpServlet {
 
     private BillingDAO billingDAO = new BillingDAO();
+    private Gson gson = new Gson();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setContentType("application/json");
 
-        // URL eken appointment number eka ganeema (e.g., ?aptNo=APT-2026-0001)
-        String aptNo = request.getParameter("aptNo");
+        BufferedReader reader = request.getReader();
+        JsonObject requestData = gson.fromJson(reader, JsonObject.class);
+        String aptNumber = requestData.get("appointmentNumber").getAsString();
 
-        if (aptNo != null) {
-            String invoiceNumber = billingDAO.generateBill(aptNo);
+        BillDTO bill = billingDAO.generateBill(aptNumber);
 
-            if (invoiceNumber != null) {
-                response.getWriter().write("{\"invoice\": \"" + invoiceNumber + "\", \"status\": \"Success\"}");
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"error\": \"Error generating bill or appointment not found\"}");
-            }
+        if (bill.success) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(gson.toJson(bill));
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\": \"Appointment Number is required\"}");
+            response.getWriter().write("{\"error\": \"" + bill.message + "\"}");
         }
     }
 }

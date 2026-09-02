@@ -121,3 +121,78 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+// --- Search Appointment API Call ---
+function searchAppointment() {
+    const aptNo = document.getElementById("searchAptNo").value.trim();
+    
+    if(!aptNo) {
+        alert("Please enter an Appointment Number!");
+        return;
+    }
+
+    fetch(`http://localhost:8080/api/search?aptNo=${aptNo}`)
+    .then(async (response) => {
+        if(response.ok) {
+            const data = await response.json();
+            // Show the results div
+            document.getElementById("searchResults").style.display = "block";
+            
+            // Populate data
+            document.getElementById("resPatientName").innerText = data.patient_name;
+            document.getElementById("resContact").innerText = data.patient_contact;
+            document.getElementById("resAddress").innerText = data.patient_address;
+            document.getElementById("resDentist").innerText = data.dentist_name;
+            document.getElementById("resTreatment").innerText = data.treatment_name;
+            document.getElementById("resDateTime").innerText = data.appointment_date + " at " + data.appointment_time;
+            document.getElementById("resStatus").innerText = data.appointment_status;
+        } else {
+            const errData = await response.json();
+            alert("Error: " + errData.error);
+            document.getElementById("searchResults").style.display = "none";
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Cannot connect to the server.");
+    });
+}
+
+// --- Generate Bill API Call ---
+function generateBill() {
+    const aptNo = document.getElementById("billAptNo").value.trim();
+    
+    if(!aptNo) {
+        alert("Please enter an Appointment Number!");
+        return;
+    }
+
+    fetch("http://localhost:8080/api/billing", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ appointmentNumber: aptNo })
+    })
+    .then(async (response) => {
+        if(response.ok) {
+            const billData = await response.json();
+            
+            // Show Invoice
+            document.getElementById("invoiceArea").style.display = "block";
+            document.getElementById("invNumber").innerText = billData.invoiceNumber;
+            document.getElementById("invAptNumber").innerText = billData.appointmentNumber;
+            document.getElementById("invDate").innerText = new Date().toLocaleDateString();
+            document.getElementById("invTotal").innerText = billData.totalAmount.toFixed(2);
+            
+        } else {
+            const errData = await response.json();
+            alert("Error: " + errData.error);
+            document.getElementById("invoiceArea").style.display = "none";
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Cannot connect to the server.");
+    });
+}
