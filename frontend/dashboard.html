@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Sunrise Clinic</h3>
+                <p id="loggedInUser">Welcome, Staff</p>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" onclick="showSection('registerSection')">Register Appointment</a></li>
+                <li><a href="#" onclick="showSection('searchSection')">View/Search Details</a></li>
+                <li><a href="#" onclick="showSection('billingSection')">Calculate & Print Bill</a></li>
+                <li><a href="#" onclick="showSection('helpSection')">Help & Instructions</a></li>
+                <li><a href="#" class="logout-btn" id="logoutBtn">Exit System</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            
+            <!-- Requirement 2: Register New Appointment Section -->
+            <div id="registerSection" class="content-section active-section">
+                <h2>Register New Appointment</h2>
+                <form id="appointmentForm" class="dashboard-form">
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Appointment Number</label>
+                            <input type="text" id="aptNumber" required placeholder="e.g., APT-2026-0002">
+                        </div>
+                        <div class="input-group">
+                            <label>Appointment Date</label>
+                            <input type="date" id="aptDate" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Appointment Time</label>
+                            <input type="time" id="aptTime" required>
+                        </div>
+                    </div>
+
+                    <h3>Patient Details</h3>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Patient Full Name</label>
+                            <input type="text" id="patientName" required placeholder="Enter full name">
+                        </div>
+                        <div class="input-group">
+                            <label>Contact Number</label>
+                            <input type="text" id="contactNumber" required placeholder="07XXXXXXXX">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Address</label>
+                        <input type="text" id="address" required placeholder="Enter home address">
+                    </div>
+
+                    <h3>Treatment Details</h3>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Assign Dentist</label>
+                            <select id="dentistId" required>
+                                <option value="">-- Select Dentist --</option>
+                                <option value="1">Dr. Asela Jayasinghe (Orthodontist)</option>
+                                <option value="2">Dr. Niluka Perera (Endodontist)</option>
+                                <option value="3">Dr. Farhan Rauf (Cosmetic)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Treatment Type</label>
+                            <select id="treatmentId" required>
+                                <option value="">-- Select Treatment --</option>
+                                <option value="1">Routine Scaling & Polishing</option>
+                                <option value="2">Composite Tooth Filling</option>
+                                <option value="3">Simple Tooth Extraction</option>
+                                <option value="4">Root Canal Treatment</option>
+                                <option value="5">Laser Teeth Whitening</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-top: 15px;">Save Appointment</button>
+                </form>
+            </div>
+
+            <!-- Other sections (Hidden by default, will build later) -->
+            <div id="searchSection" class="content-section" style="display: none;">
+                <h2>Search Appointment Details</h2>
+                <p>Search functionality will be implemented here.</p>
+            </div>
+            
+            <div id="billingSection" class="content-section" style="display: none;">
+                <h2>Calculate & Print Bill</h2>
+                <p>Billing functionality will be implemented here.</p>
+            </div>
+
+            <div id="helpSection" class="content-section" style="display: none;">
+                <h2>System Instructions</h2>
+                <p>1. Use the left menu to navigate.<br>2. Fill all details accurately to register appointments.<br>3. Always logout before leaving the desk.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
