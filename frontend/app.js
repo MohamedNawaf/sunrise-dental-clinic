@@ -22,21 +22,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 body: JSON.stringify(loginData)
             })
-            .then(response => {
+            .then(async response => {
                 if(response.ok) {
-                    // If login is successfull, user can be redirected to the dashboard page
+                    const data = await response.json();
                     sessionStorage.setItem("isLoggedIn", "true");
                     sessionStorage.setItem("staffName", username);
+                    sessionStorage.setItem("userRole", data.role); // Role eka save kara ganima
+                    
                     window.location.href = "dashboard.html";
                 } else {
-                    // Password or username is incorrect, show error message
                     errorDiv.style.display = "block";
                 }
             })
-            .catch(error => {
-                console.error("Error connecting to server:", error);
-                alert("Cannot connect to the server. Make sure Tomcat is running!");
-            });
         });
     }
 });

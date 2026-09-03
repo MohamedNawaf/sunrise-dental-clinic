@@ -1,5 +1,6 @@
 package dao;
 
+import model.UserDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,29 +10,33 @@ import java.security.NoSuchAlgorithmException;
 
 public class UserDAO {
 
-    // Check if the username and password match a record in the database
-    public boolean validateUser(String username, String password) {
-        String query = "SELECT * FROM tbl_users WHERE username = ? AND password_hash = ?";
+    public UserDTO validateUser(String username, String password) {
+        UserDTO user = new UserDTO();
+        user.isValid = false;
+
+        String query = "SELECT role FROM tbl_users WHERE username = ? AND password_hash = ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, username);
-            // Hash the entered password before comparing it with the database
             stmt.setString(2, hashPassword(password));
 
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // Returns true if a match is found
+                if (rs.next()) {
+                    user.isValid = true;
+                    user.username = username;
+                    user.role = rs.getString("role"); // ADMIN or RECEPTIONIST
+                }
             }
 
         } catch (SQLException e) {
             System.err.println("Error validating user: " + e.getMessage());
         }
 
-        return false;
+        return user;
     }
 
-    // Helper method to encrypt the frontend password into SHA-256
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.UserDAO;
+import model.UserDTO;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,7 +20,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
-        // CORS settings for frontend connection
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -31,19 +31,18 @@ public class LoginServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setContentType("application/json");
 
-        // Read JSON data sent from the frontend
         BufferedReader reader = request.getReader();
         JsonObject loginData = gson.fromJson(reader, JsonObject.class);
 
         String username = loginData.get("username").getAsString();
         String password = loginData.get("password").getAsString();
 
-        // Validate credentials using DAO
-        boolean isValid = userDAO.validateUser(username, password);
+        UserDTO user = userDAO.validateUser(username, password);
 
-        if (isValid) {
+        if (user.isValid) {
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write("{\"message\": \"Login successful\"}");
+            // Frontend ekata role ekath ekkama data yawima
+            response.getWriter().write("{\"message\": \"Login successful\", \"role\": \"" + user.role + "\"}");
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("{\"error\": \"Invalid credentials\"}");
