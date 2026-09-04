@@ -97,7 +97,7 @@
                 </form>
             </div>
 
-            <!-- Other sections (Hidden by default, will build later) -->
+            <!-- View/Search Details Section -->
             <div id="searchSection" class="content-section" style="display: none;">
                 <h2>Search Appointment Details</h2>
                 <div class="form-row" style="margin-bottom: 20px;">
@@ -120,6 +120,7 @@
                 </div>
             </div>
             
+            <!-- Calculate & Print Bill Section -->
             <div id="billingSection" class="content-section" style="display: none;">
                 <h2>Calculate & Print Bill</h2>
                 <div class="form-row" style="margin-bottom: 20px;">
@@ -146,10 +147,13 @@
                 </div>
             </div>
 
-            <!-- Admin Sections (Hidden by default) -->
-            <!-- Admin: Add Dentist Section -->
+            <!-- Admin: Add & Manage Dentist Section -->
             <div id="addDentistSection" class="content-section" style="display: none;">
-                <h2>Add New Dentist</h2>
+                <h2>Manage Dentists</h2>
+                
+                <!-- Hidden Input for Edit ID -->
+                <input type="hidden" id="editDentistId" value="">
+
                 <form id="addDentistForm" class="dashboard-form">
                     <div class="form-row">
                         <div class="input-group">
@@ -163,11 +167,30 @@
                     </div>
                     <div class="input-group">
                         <label>Specialization</label>
-                        <input type="text" id="newDentistSpec" required placeholder="e.g., General Dentist, Orthodontist">
+                        <input type="text" id="newDentistSpec" required placeholder="e.g., General Dentist">
                     </div>
                     
-                    <button type="submit" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Dentist</button>
+                    <button type="submit" id="saveDentistBtn" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Dentist</button>
+                    <button type="button" id="cancelEditDentistBtn" class="btn-secondary" style="margin-top: 15px; display: none;" onclick="resetDentistForm()">Cancel Edit</button>
                 </form>
+
+                <hr style="margin: 30px 0; border: 1px solid #bdc3c7;">
+                
+                <h3>Current Dentists</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dentistTableBody">
+                        <!-- Data will be loaded here dynamically -->
+                    </tbody>
+                </table>
             </div>
 
             <!-- Admin: Add Treatment Section -->
@@ -229,6 +252,7 @@
                 </form>
             </div>
 
+            <!-- Help Section -->
             <div id="helpSection" class="content-section" style="display: none;">
                 <h2>System Instructions & Help Guide</h2>
                 <p style="color: #7f8c8d; margin-bottom: 20px;">Follow these instructions to navigate the Sunrise Dental Clinic Management System correctly.</p>

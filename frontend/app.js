@@ -1,3 +1,4 @@
+// -- Login logic --
 document.addEventListener("DOMContentLoaded", function() {
     const loginForm = document.getElementById("loginForm");
 
@@ -87,13 +88,13 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if(appointmentForm) {
         appointmentForm.addEventListener("submit", function(event) {
-            event.preventDefault(); // Form eka submit weddi page reload wena eka nawathwanawa
+            event.preventDefault(); // The Form stops reloading when the form is submitted
 
-            // Form eke thiyena data tika object ekakata ganeema
+            // Getting the data from the form into an object
             const aptData = {
                 appointmentNumber: document.getElementById("aptNumber").value,
                 appointmentDate: document.getElementById("aptDate").value,
-                appointmentTime: document.getElementById("aptTime").value + ":00", // MySQL TIME format ekata galapenna seconds ekathu kireema
+                appointmentTime: document.getElementById("aptTime").value + ":00", // Adding seconds to match the MySQL time format
                 patientName: document.getElementById("patientName").value,
                 contactNumber: document.getElementById("contactNumber").value,
                 address: document.getElementById("address").value,
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 treatmentId: parseInt(document.getElementById("treatmentId").value)
             };
 
-            // Backend API ekata data yawima
+            // Send the data to the backend API
             fetch("http://localhost:8080/api/appointments", {
                 method: "POST",
                 headers: {
@@ -201,34 +202,105 @@ function generateBill() {
     });
 }
 
-// --- Add Dentist API Call (Admin Only) ---
-document.addEventListener("DOMContentLoaded", function() {
-    const addDentistForm = document.getElementById("addDentistForm");
+// ==========================================
+// --- MANAGE DENTISTS (Admin Only) ---
+// ==========================================
+
+function loadDentists() {
+    fetch("http://localhost:8080/api/dentists")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("dentistTableBody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach((dentist, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${index + 1}</td> <!-- 1, 2, 3... piliwelata display weema -->
+                    <td>${dentist.dentistName}</td>
+                    <td>${dentist.specialization}</td>
+                    <td>${dentist.contactNumber}</td>
+                    <td>
+                        <button onclick="editDentist(${dentist.id}, '${dentist.dentistName}', '${dentist.specialization}', '${dentist.contactNumber}')" style="background:#3498db; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; font-weight:bold;">Edit</button>
+                        <button onclick="deleteDentist(${dentist.id})" style="background:#e74c3c; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; margin-left:5px; font-weight:bold;">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    })
+    .catch(error => console.error("Error loading dentists:", error));
+}
+
+function resetDentistForm() {
+    document.getElementById("addDentistForm").reset();
+    document.getElementById("editDentistId").value = "";
+    document.getElementById("saveDentistBtn").innerText = "Save Dentist";
+    document.getElementById("cancelEditDentistBtn").style.display = "none";
+}
+
+function editDentist(id, name, spec, contact) {
+    document.getElementById("editDentistId").value = id;
+    document.getElementById("newDentistName").value = name;
+    document.getElementById("newDentistSpec").value = spec;
+    document.getElementById("newDentistContact").value = contact;
     
+    document.getElementById("saveDentistBtn").innerText = "Update Dentist";
+    document.getElementById("cancelEditDentistBtn").style.display = "inline-block";
+    window.scrollTo(0, 0); 
+}
+
+function deleteDentist(id) {
+    if(confirm("Are you sure you want to remove this dentist?")) {
+        fetch(`http://localhost:8080/api/dentists?id=${id}`, { method: 'DELETE' })
+        .then(response => {
+            if(response.ok) {
+                alert("Dentist removed successfully!");
+                loadDentists(); // Table eka auto refresh wenawa
+            } else {
+                alert("Failed to delete dentist.");
+            }
+        });
+    }
+}
+
+// Event Listeners for Dentist Form
+document.addEventListener("DOMContentLoaded", function() {
+    // If ADMIN is logged in, auto-load the dentists table
+    if(sessionStorage.getItem("userRole") === "ADMIN") {
+        setTimeout(loadDentists, 500); // Small delay to ensure UI is ready
+    }
+
+    const addDentistForm = document.getElementById("addDentistForm");
     if(addDentistForm) {
         addDentistForm.addEventListener("submit", function(event) {
             event.preventDefault();
 
+            const id = document.getElementById("editDentistId").value;
+            const method = id ? "PUT" : "POST";
+            
             const dentistData = {
                 dentistName: document.getElementById("newDentistName").value,
                 contactNumber: document.getElementById("newDentistContact").value,
                 specialization: document.getElementById("newDentistSpec").value
             };
+            
+            if(id) {
+                dentistData.id = parseInt(id);
+            }
 
             fetch("http://localhost:8080/api/dentists", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                method: method,
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(dentistData)
             })
-            .then(async (response) => {
-                if (response.status === 201) {
-                    alert("Success: Dentist successfully added!");
-                    addDentistForm.reset();
+            .then(response => {
+                if (response.ok || response.status === 201) {
+                    alert(id ? "Success: Dentist updated!" : "Success: Dentist added!");
+                    resetDentistForm();
+                    loadDentists(); // Reload the table with new data
                 } else {
-                    const resData = await response.json();
-                    alert("Error: " + (resData.error || "Failed to add dentist."));
+                    alert("Error processing request.");
                 }
             })
             .catch(error => {
@@ -314,5 +386,43 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert("Cannot connect to the server.");
             });
         });
+    }
+});
+
+// --- Load Dynamic Dropdowns for Appointment Registration ---
+function loadAppointmentDropdowns() {
+    // 1. Load Active Dentists
+    fetch("http://localhost:8080/api/dentists")
+    .then(response => response.json())
+    .then(data => {
+        const dentistSelect = document.getElementById("dentistId");
+        if(dentistSelect) {
+            dentistSelect.innerHTML = '<option value="">-- Select Dentist --</option>'; 
+            data.forEach(dentist => {
+                dentistSelect.innerHTML += `<option value="${dentist.id}">${dentist.dentistName} (${dentist.specialization})</option>`;
+            });
+        }
+    })
+    .catch(error => console.error("Error loading dentists for dropdown:", error));
+
+    // 2. Load Treatments
+    fetch("http://localhost:8080/api/treatments")
+    .then(response => response.json())
+    .then(data => {
+        const treatmentSelect = document.getElementById("treatmentId");
+        if(treatmentSelect) {
+            treatmentSelect.innerHTML = '<option value="">-- Select Treatment --</option>'; 
+            data.forEach(treatment => {
+                treatmentSelect.innerHTML += `<option value="${treatment.id}">${treatment.treatmentName} (LKR ${treatment.treatmentCost})</option>`;
+            });
+        }
+    })
+    .catch(error => console.error("Error loading treatments for dropdown:", error));
+}
+
+// Call dropdown function when dashboard loads
+document.addEventListener("DOMContentLoaded", function() {
+    if(window.location.pathname.includes("dashboard.html")) {
+        setTimeout(loadAppointmentDropdowns, 500); // Load dynamic data
     }
 });
