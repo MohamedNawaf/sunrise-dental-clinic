@@ -573,3 +573,55 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(loadAppointmentDropdowns, 500); // Load dynamic data
     }
 });
+
+// ==========================================
+// --- CLINIC INFO & PRICING (All Roles) ---
+// ==========================================
+
+function loadClinicInfo() {
+    // 1. Load Dentists for Info Section
+    fetch("http://localhost:8080/api/dentists")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("infoDentistTableBody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach(dentist => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #2c3e50;">${dentist.dentistName}</td>
+                        <td>${dentist.specialization}</td>
+                        <td>${dentist.contactNumber}</td>
+                    </tr>
+                `;
+            });
+        }
+    })
+    .catch(error => console.error("Error loading dentists info:", error));
+
+    // 2. Load Treatments and Calculate Total Cost
+    fetch("http://localhost:8080/api/treatments")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("infoTreatmentTableBody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach(treatment => {
+                const cost = parseFloat(treatment.treatmentCost);
+                const fee = parseFloat(treatment.standardConsultationFee);
+                const total = cost + fee; // Mulukawama yana wiyadama
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #2c3e50;">${treatment.treatmentName}</td>
+                        <td style="font-size: 13px; color: #7f8c8d;">${treatment.description}</td>
+                        <td>${cost.toFixed(2)}</td>
+                        <td>${fee.toFixed(2)}</td>
+                        <td style="color: #27ae60; font-weight: bold; font-size: 15px;">${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+        }
+    })
+    .catch(error => console.error("Error loading treatments info:", error));
+}

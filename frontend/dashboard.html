@@ -19,6 +19,7 @@
                 <li><a href="#" class="active" onclick="showSection('registerSection')">Register Appointment</a></li>
                 <li><a href="#" onclick="showSection('searchSection')">View/Search Details</a></li>
                 <li><a href="#" onclick="showSection('billingSection')">Calculate & Print Bill</a></li>
+                <li><a href="#" onclick="showSection('clinicInfoSection'); loadClinicInfo();">Clinic Info & Pricing</a></li>
                 <li><a href="#" onclick="showSection('helpSection')">Help & Instructions</a></li>
                 
                 <!-- Admin Only Menu -->
@@ -292,6 +293,44 @@
                     </thead>
                     <tbody id="staffTableBody">
                         <!-- Data will be loaded here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Clinic Info & Pricing Section (Accessible to ALL roles) -->
+            <div id="clinicInfoSection" class="content-section" style="display: none;">
+                <h2>Clinic Information & Pricing</h2>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">Use this section to quickly provide information to patients regarding available dentists and estimated treatment costs.</p>
+
+                <h3 style="color: #2980b9;">👨‍⚕️ Available Dentists</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Dentist Name</th>
+                            <th>Specialization</th>
+                            <th>Contact Number</th>
+                        </tr>
+                    </thead>
+                    <tbody id="infoDentistTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+
+                <hr style="margin: 40px 0; border: 1px solid #ecf0f1;">
+
+                <h3 style="color: #2980b9;">💉 Treatment Pricing (LKR)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Treatment Name</th>
+                            <th>Description</th>
+                            <th>Treatment Cost</th>
+                            <th>Consultation Fee</th>
+                            <th>Total Estimated Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody id="infoTreatmentTableBody">
+                        <!-- Loaded dynamically -->
                     </tbody>
                 </table>
             </div>
