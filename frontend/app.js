@@ -311,35 +311,107 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// --- Add Treatment API Call (Admin Only) ---
-document.addEventListener("DOMContentLoaded", function() {
-    const addTreatmentForm = document.getElementById("addTreatmentForm");
+// ==========================================
+// --- MANAGE TREATMENTS (Admin Only) ---
+// ==========================================
+
+function loadTreatments() {
+    fetch("http://localhost:8080/api/treatments")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("treatmentTableBody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach((treatment, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${treatment.treatmentName}</td>
+                    <td>${parseFloat(treatment.treatmentCost).toFixed(2)}</td>
+                    <td>${parseFloat(treatment.standardConsultationFee).toFixed(2)}</td>
+                    <td>
+                        <button onclick="editTreatment(${treatment.id}, '${treatment.treatmentName}', '${treatment.description}', ${treatment.treatmentCost}, ${treatment.standardConsultationFee})" style="background:#3498db; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; font-weight:bold;">Edit</button>
+                        <button onclick="deleteTreatment(${treatment.id})" style="background:#e74c3c; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; margin-left:5px; font-weight:bold;">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    })
+    .catch(error => console.error("Error loading treatments:", error));
+}
+
+function resetTreatmentForm() {
+    document.getElementById("addTreatmentForm").reset();
+    document.getElementById("editTreatmentId").value = "";
+    document.getElementById("saveTreatmentBtn").innerText = "Save Treatment";
+    document.getElementById("cancelEditTreatmentBtn").style.display = "none";
+}
+
+function editTreatment(id, name, desc, cost, fee) {
+    document.getElementById("editTreatmentId").value = id;
+    document.getElementById("newTreatmentName").value = name;
+    document.getElementById("newTreatmentDesc").value = desc;
+    document.getElementById("newTreatmentCost").value = cost;
+    document.getElementById("newConsultationFee").value = fee;
     
+    document.getElementById("saveTreatmentBtn").innerText = "Update Treatment";
+    document.getElementById("cancelEditTreatmentBtn").style.display = "inline-block";
+    window.scrollTo(0, 0); 
+}
+
+function deleteTreatment(id) {
+    if(confirm("Are you sure you want to remove this treatment?")) {
+        fetch(`http://localhost:8080/api/treatments?id=${id}`, { method: 'DELETE' })
+        .then(response => {
+            if(response.ok) {
+                alert("Treatment removed successfully!");
+                loadTreatments();
+                loadAppointmentDropdowns(); // Update new appointment dropdown
+            } else {
+                alert("Failed to delete treatment.");
+            }
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    if(sessionStorage.getItem("userRole") === "ADMIN") {
+        setTimeout(loadTreatments, 500); 
+    }
+
+    const addTreatmentForm = document.getElementById("addTreatmentForm");
     if(addTreatmentForm) {
         addTreatmentForm.addEventListener("submit", function(event) {
             event.preventDefault();
 
+            const id = document.getElementById("editTreatmentId").value;
+            const method = id ? "PUT" : "POST";
+            
             const treatmentData = {
                 treatmentName: document.getElementById("newTreatmentName").value,
                 description: document.getElementById("newTreatmentDesc").value,
                 treatmentCost: parseFloat(document.getElementById("newTreatmentCost").value),
                 standardConsultationFee: parseFloat(document.getElementById("newConsultationFee").value)
             };
+            
+            if(id) {
+                treatmentData.id = parseInt(id);
+            }
 
             fetch("http://localhost:8080/api/treatments", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                method: method,
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(treatmentData)
             })
-            .then(async (response) => {
-                if (response.status === 201) {
-                    alert("Success: Treatment successfully added!");
-                    addTreatmentForm.reset();
+            .then(response => {
+                if (response.ok || response.status === 201) {
+                    alert(id ? "Success: Treatment updated!" : "Success: Treatment added!");
+                    resetTreatmentForm();
+                    loadTreatments(); 
+                    loadAppointmentDropdowns(); // Update dropdown
                 } else {
-                    const resData = await response.json();
-                    alert("Error: " + (resData.error || "Failed to add treatment."));
+                    alert("Error: Treatment name might already exist.");
                 }
             })
             .catch(error => {

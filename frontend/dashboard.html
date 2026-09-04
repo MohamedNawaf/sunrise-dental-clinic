@@ -193,9 +193,12 @@
                 </table>
             </div>
 
-            <!-- Admin: Add Treatment Section -->
+            <!-- Admin: Add & Manage Treatment Section -->
             <div id="addTreatmentSection" class="content-section" style="display: none;">
-                <h2>Add New Treatment</h2>
+                <h2>Manage Treatments</h2>
+                
+                <input type="hidden" id="editTreatmentId" value="">
+
                 <form id="addTreatmentForm" class="dashboard-form">
                     <div class="input-group">
                         <label>Treatment Name</label>
@@ -216,8 +219,27 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Treatment</button>
+                    <button type="submit" id="saveTreatmentBtn" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Treatment</button>
+                    <button type="button" id="cancelEditTreatmentBtn" class="btn-secondary" style="margin-top: 15px; display: none;" onclick="resetTreatmentForm()">Cancel Edit</button>
                 </form>
+
+                <hr style="margin: 30px 0; border: 1px solid #bdc3c7;">
+                
+                <h3>Current Treatments</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Treatment Name</th>
+                            <th>Cost (LKR)</th>
+                            <th>Consultation (LKR)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="treatmentTableBody">
+                        <!-- Data will be loaded here dynamically -->
+                    </tbody>
+                </table>
             </div>
 
             <!-- Admin: Add Staff Section -->
