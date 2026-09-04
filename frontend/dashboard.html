@@ -17,7 +17,7 @@
             <ul class="nav-links">
                 <!-- Menu for Staff & Admin -->
                 <li><a href="#" class="active" onclick="showSection('registerSection')">Register Appointment</a></li>
-                <li><a href="#" onclick="showSection('searchSection')">View/Search Details</a></li>
+                <li><a href="#" onclick="showSection('searchSection'); loadAllAppointments();">View/Search Details</a></li>
                 <li><a href="#" onclick="showSection('billingSection')">Calculate & Print Bill</a></li>
                 <li><a href="#" onclick="showSection('clinicInfoSection'); loadClinicInfo();">Clinic Info & Pricing</a></li>
                 <li><a href="#" onclick="showSection('helpSection')">Help & Instructions</a></li>
@@ -118,6 +118,51 @@
                     <p><strong>Treatment:</strong> <span id="resTreatment"></span></p>
                     <p><strong>Date & Time:</strong> <span id="resDateTime"></span></p>
                     <p><strong>Status:</strong> <span id="resStatus" style="font-weight: bold; color: #e67e22;"></span></p>
+                </div>
+
+                <hr style="margin: 40px 0; border: 1px solid #bdc3c7;">
+                
+                <h3>All Registered Appointments</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appt No</th>
+                            <th>Patient Name</th>
+                            <th>Dentist</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th id="adminActionHeader" style="display: none;">Actions</th> <!-- Admin Only -->
+                        </tr>
+                    </thead>
+                    <tbody id="allAppointmentsTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+
+                <!-- Admin Reschedule/Edit Form (Hidden by default) -->
+                <div id="editAppointmentBox" style="display: none; background: #fdf2e9; padding: 20px; border-radius: 8px; border-left: 5px solid #e67e22; margin-top: 20px;">
+                    <h3 style="color: #d35400; margin-top: 0;">Reschedule / Update Appointment</h3>
+                    <input type="hidden" id="updateAptNo">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>New Date</label>
+                            <input type="date" id="updateAptDate" required>
+                        </div>
+                        <div class="input-group">
+                            <label>New Time</label>
+                            <input type="time" id="updateAptTime" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Status</label>
+                            <select id="updateAptStatus">
+                                <option value="SCHEDULED">SCHEDULED</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="saveAppointmentUpdate()" style="background-color: #d35400; width: auto; margin-right: 10px;">Save Changes</button>
+                    <button class="btn-secondary" onclick="document.getElementById('editAppointmentBox').style.display='none'" style="width: auto;">Close</button>
                 </div>
             </div>
             

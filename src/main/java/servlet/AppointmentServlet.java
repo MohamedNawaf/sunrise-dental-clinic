@@ -18,7 +18,7 @@ public class AppointmentServlet extends HttpServlet {
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
         resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
         resp.setStatus(HttpServletResponse.SC_OK);
     }
@@ -40,5 +40,33 @@ public class AppointmentServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"error\": \"Failed to register appointment.\"}");
         }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Headers tika meketath add karanna
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.setContentType("application/json");
+
+        model.AppointmentUpdateDTO updateData = gson.fromJson(request.getReader(), model.AppointmentUpdateDTO.class);
+
+        if (appointmentDAO.updateAppointment(updateData)) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("{\"message\": \"Appointment updated\"}");
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Failed to update appointment\"}");
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setContentType("application/json");
+
+        java.util.List<model.AppointmentDetailsDTO> appointments = appointmentDAO.getAllAppointments();
+        response.getWriter().write(gson.toJson(appointments));
     }
 }

@@ -625,3 +625,171 @@ function loadClinicInfo() {
     })
     .catch(error => console.error("Error loading treatments info:", error));
 }
+
+// ==========================================
+// --- LOAD ALL APPOINTMENTS ---
+// ==========================================
+function loadAllAppointments() {
+    fetch("http://localhost:8080/api/appointments")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("allAppointmentsTableBody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach(apt => {
+                // Color change is optional, when change the status
+                let statusColor = "#e67e22"; // SCHEDULED (Orange)
+                if(apt.appointmentStatus === "COMPLETED") statusColor = "#27ae60"; // Green
+                if(apt.appointmentStatus === "CANCELLED") statusColor = "#e74c3c"; // Red
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #2980b9;">${apt.appointmentNumber}</td>
+                        <td>
+                            <strong>${apt.patientName}</strong><br>
+                            <span style="font-size: 12px; color: #7f8c8d;">${apt.contactNumber}</span>
+                        </td>
+                        <td>${apt.dentistName}</td>
+                        <td>
+                            ${apt.appointmentDate}<br>
+                            <span style="font-size: 12px; color: #7f8c8d;">${apt.appointmentTime}</span>
+                        </td>
+                        <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">${apt.appointmentStatus}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    })
+    .catch(error => console.error("Error loading all appointments:", error));
+}
+
+// ==========================================
+// --- LOAD & MANAGE ALL APPOINTMENTS ---
+// ==========================================
+function loadAllAppointments() {
+    fetch("http://localhost:8080/api/appointments")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("allAppointmentsTableBody");
+        const isAdmin = sessionStorage.getItem("userRole") === "ADMIN";
+        
+        if (isAdmin) {
+            document.getElementById("adminActionHeader").style.display = "table-cell";
+        }
+
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach(apt => {
+                let statusColor = "#e67e22"; 
+                if(apt.appointmentStatus === "COMPLETED") statusColor = "#27ae60"; 
+                if(apt.appointmentStatus === "CANCELLED") statusColor = "#e74c3c"; 
+
+                let actionHtml = "";
+                if (isAdmin) {
+                    // Update: Passing Date and Time directly into the cancelAppointment function
+                    actionHtml = `
+                        <td>
+                            <button onclick="openEditAppointment('${apt.appointmentNumber}', '${apt.appointmentDate}', '${apt.appointmentTime}', '${apt.appointmentStatus}')" style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:3px; font-size:12px;">Edit</button>
+                            <button onclick="cancelAppointment('${apt.appointmentNumber}', '${apt.appointmentDate}', '${apt.appointmentTime}')" style="background:#c0392b; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:3px; font-size:12px; margin-left:5px;">Cancel</button>
+                        </td>
+                    `;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #2980b9;">${apt.appointmentNumber}</td>
+                        <td>
+                            <strong>${apt.patientName}</strong><br>
+                            <span style="font-size: 12px; color: #7f8c8d;">${apt.contactNumber}</span>
+                        </td>
+                        <td>${apt.dentistName}</td>
+                        <td>
+                            ${apt.appointmentDate}<br>
+                            <span style="font-size: 12px; color: #7f8c8d;">${apt.appointmentTime}</span>
+                        </td>
+                        <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">${apt.appointmentStatus}</span></td>
+                        ${actionHtml}
+                    </tr>
+                `;
+            });
+        }
+    })
+    .catch(error => console.error("Error loading all appointments:", error));
+}
+
+// --- Direct Cancel Appointment Logic ---
+function cancelAppointment(aptNo, date, time) {
+    if(confirm(`Are you sure you want to CANCEL appointment ${aptNo}?`)) {
+        
+        // Ensure time format matches MySQL (HH:MM:SS)
+        let timeStr = time;
+        if(timeStr.length === 5) {
+            timeStr += ":00"; 
+        }
+
+        const cancelData = {
+            appointmentNumber: aptNo,
+            appointmentDate: date,
+            appointmentTime: timeStr,
+            status: "CANCELLED" // Explicitly sending CANCELLED
+        };
+
+        fetch("http://localhost:8080/api/appointments", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cancelData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert(`Success: Appointment ${aptNo} has been marked as CANCELLED.`);
+                loadAllAppointments(); // Refresh the table
+            } else {
+                alert("Failed to cancel the appointment. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Network error occurred.");
+        });
+    }
+}
+
+// --- Admin Reschedule / Update Appointment ---
+function openEditAppointment(aptNo, date, time, status) {
+    document.getElementById("editAppointmentBox").style.display = "block";
+    document.getElementById("updateAptNo").value = aptNo;
+    document.getElementById("updateAptDate").value = date;
+    document.getElementById("updateAptTime").value = time;
+    document.getElementById("updateAptStatus").value = status;
+    
+    // Smooth scroll to the edit box
+    document.getElementById("editAppointmentBox").scrollIntoView({ behavior: 'smooth' });
+}
+
+function saveAppointmentUpdate() {
+    const updateData = {
+        appointmentNumber: document.getElementById("updateAptNo").value,
+        appointmentDate: document.getElementById("updateAptDate").value,
+        appointmentTime: document.getElementById("updateAptTime").value,
+        status: document.getElementById("updateAptStatus").value
+    };
+
+    if(updateData.appointmentTime.length === 5) {
+        updateData.appointmentTime += ":00"; // MySQL TIME format compatibility
+    }
+
+    fetch("http://localhost:8080/api/appointments", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateData)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Appointment successfully updated/rescheduled!");
+            document.getElementById("editAppointmentBox").style.display = "none";
+            loadAllAppointments(); // Refresh table
+        } else {
+            alert("Failed to update appointment.");
+        }
+    });
+}

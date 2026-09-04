@@ -13,7 +13,7 @@ public class AppointmentDAO {
         try {
             conn = DatabaseConnection.getInstance().getConnection();
 
-            // Auto-commit off karala Transaction eka patan ganeema
+            // Auto-commit off
             conn.setAutoCommit(false);
 
             // 1. Mulinma Patient wa save kireema
@@ -67,6 +67,50 @@ public class AppointmentDAO {
             if (conn != null) {
                 try { conn.setAutoCommit(true); } catch (SQLException ex) { ex.printStackTrace(); }
             }
+        }
+    }
+
+    public java.util.List<model.AppointmentDetailsDTO> getAllAppointments() {
+        java.util.List<model.AppointmentDetailsDTO> list = new java.util.ArrayList<>();
+        // Aluthma appointments udin pennanna ORDER BY pawichchi karanawa
+        String query = "SELECT appointment_number, patient_name, patient_contact, dentist_name, treatment_name, appointment_date, appointment_time, appointment_status FROM vw_appointment_details ORDER BY appointment_date DESC, appointment_time DESC";
+
+        try (java.sql.Connection conn = DatabaseConnection.getInstance().getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query);
+             java.sql.ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                model.AppointmentDetailsDTO dto = new model.AppointmentDetailsDTO();
+                dto.appointmentNumber = rs.getString("appointment_number");
+                dto.patientName = rs.getString("patient_name");
+                dto.contactNumber = rs.getString("patient_contact");
+                dto.dentistName = rs.getString("dentist_name");
+                dto.treatmentName = rs.getString("treatment_name");
+                dto.appointmentDate = rs.getString("appointment_date");
+                dto.appointmentTime = rs.getString("appointment_time");
+                dto.appointmentStatus = rs.getString("appointment_status");
+                list.add(dto);
+            }
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean updateAppointment(model.AppointmentUpdateDTO dto) {
+        String query = "UPDATE tbl_appointments SET appointment_date=?, appointment_time=?, status=? WHERE appointment_number=?";
+        try (java.sql.Connection conn = DatabaseConnection.getInstance().getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, dto.appointmentDate);
+            stmt.setString(2, dto.appointmentTime);
+            stmt.setString(3, dto.status);
+            stmt.setString(4, dto.appointmentNumber);
+
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
