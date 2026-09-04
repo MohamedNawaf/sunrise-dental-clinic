@@ -238,3 +238,42 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+// --- Add Treatment API Call (Admin Only) ---
+document.addEventListener("DOMContentLoaded", function() {
+    const addTreatmentForm = document.getElementById("addTreatmentForm");
+    
+    if(addTreatmentForm) {
+        addTreatmentForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const treatmentData = {
+                treatmentName: document.getElementById("newTreatmentName").value,
+                description: document.getElementById("newTreatmentDesc").value,
+                treatmentCost: parseFloat(document.getElementById("newTreatmentCost").value),
+                standardConsultationFee: parseFloat(document.getElementById("newConsultationFee").value)
+            };
+
+            fetch("http://localhost:8080/api/treatments", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(treatmentData)
+            })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    alert("Success: Treatment successfully added!");
+                    addTreatmentForm.reset();
+                } else {
+                    const resData = await response.json();
+                    alert("Error: " + (resData.error || "Failed to add treatment."));
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Cannot connect to the server.");
+            });
+        });
+    }
+});

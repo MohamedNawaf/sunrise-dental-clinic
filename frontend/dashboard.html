@@ -170,9 +170,31 @@
                 </form>
             </div>
 
+            <!-- Admin: Add Treatment Section -->
             <div id="addTreatmentSection" class="content-section" style="display: none;">
                 <h2>Add New Treatment</h2>
-                <p>Form to add a new treatment will go here.</p>
+                <form id="addTreatmentForm" class="dashboard-form">
+                    <div class="input-group">
+                        <label>Treatment Name</label>
+                        <input type="text" id="newTreatmentName" required placeholder="e.g., Dental Implants">
+                    </div>
+                    <div class="input-group">
+                        <label>Description</label>
+                        <input type="text" id="newTreatmentDesc" required placeholder="Brief description of the procedure">
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Treatment Cost (LKR)</label>
+                            <input type="number" step="0.01" id="newTreatmentCost" required placeholder="e.g., 50000.00">
+                        </div>
+                        <div class="input-group">
+                            <label>Standard Consultation Fee (LKR)</label>
+                            <input type="number" step="0.01" id="newConsultationFee" required placeholder="e.g., 1500.00">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Treatment</button>
+                </form>
             </div>
 
             <div id="addStaffSection" class="content-section" style="display: none;">
