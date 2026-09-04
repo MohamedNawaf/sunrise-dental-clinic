@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const password = document.getElementById("password").value;
             const errorDiv = document.getElementById("loginError");
 
-            // Create API request (Java Servlet ekata yawanna)
+            // Create API request (to the Java servlet) with the login credentials
             const loginData = {
                 username: username,
                 password: password
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     const data = await response.json();
                     sessionStorage.setItem("isLoggedIn", "true");
                     sessionStorage.setItem("staffName", username);
-                    sessionStorage.setItem("userRole", data.role); // Role eka save kara ganima
+                    sessionStorage.setItem("userRole", data.role); // Store the user role in session storage
                     
                     window.location.href = "dashboard.html";
                 } else {
@@ -41,21 +41,28 @@ document.addEventListener("DOMContentLoaded", function() {
 // --- Dashboard Logic & Security ---
 document.addEventListener("DOMContentLoaded", function() {
     
-    // Check if on dashboard page
     if(window.location.pathname.includes("dashboard.html")) {
         
-        // 1. Security Check: Block direct access
         if(sessionStorage.getItem("isLoggedIn") !== "true") {
             window.location.href = "index.html";
         }
 
-        // 2. Set username in sidebar
         const staffName = sessionStorage.getItem("staffName");
+        const userRole = sessionStorage.getItem("userRole"); // Get the user role from session storage
+
         if(staffName) {
-            document.getElementById("loggedInUser").innerText = "Welcome, " + staffName;
+            document.getElementById("loggedInUser").innerText = "Welcome, " + staffName + " (" + userRole + ")";
         }
 
-        // 3. Handle Logout (Requirement 6: Exit System)
+        // --- Role Based Access Control (RBAC) UI Logic ---
+        if (userRole === "ADMIN") {
+            // If the user is an admin, show admin-only elements
+            const adminElements = document.querySelectorAll('.admin-only');
+            adminElements.forEach(el => {
+                el.style.display = 'block';
+            });
+        }
+
         document.getElementById("logoutBtn").addEventListener("click", function() {
             sessionStorage.clear();
             window.location.href = "index.html";

@@ -39,9 +39,10 @@ public class LoginServlet extends HttpServlet {
 
         UserDTO user = userDAO.validateUser(username, password);
 
+
         if (user.isValid) {
             response.setStatus(HttpServletResponse.SC_OK);
-            // Frontend ekata role ekath ekkama data yawima
+            // Add data to frontend with role base
             response.getWriter().write("{\"message\": \"Login successful\", \"role\": \"" + user.role + "\"}");
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

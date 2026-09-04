@@ -15,10 +15,17 @@
                 <p id="loggedInUser">Welcome, Staff</p>
             </div>
             <ul class="nav-links">
+                <!-- Menu for Staff & Admin -->
                 <li><a href="#" class="active" onclick="showSection('registerSection')">Register Appointment</a></li>
                 <li><a href="#" onclick="showSection('searchSection')">View/Search Details</a></li>
                 <li><a href="#" onclick="showSection('billingSection')">Calculate & Print Bill</a></li>
                 <li><a href="#" onclick="showSection('helpSection')">Help & Instructions</a></li>
+                
+                <!-- Admin Only Menu -->
+                <li class="admin-only" style="display: none;"><a href="#" onclick="showSection('addDentistSection')" style="color: #f1c40f;">+ Add Dentist</a></li>
+                <li class="admin-only" style="display: none;"><a href="#" onclick="showSection('addTreatmentSection')" style="color: #f1c40f;">+ Add Treatment</a></li>
+                <li class="admin-only" style="display: none;"><a href="#" onclick="showSection('addStaffSection')" style="color: #f1c40f;">+ Add Staff</a></li>
+
                 <li><a href="#" class="logout-btn" id="logoutBtn">Exit System</a></li>
             </ul>
         </div>
@@ -137,6 +144,22 @@
                     
                     <button onclick="window.print()" class="btn-primary" style="margin-top: 20px; width: 100%; background-color: #27ae60;">Print Receipt</button>
                 </div>
+            </div>
+
+            <!-- Admin Sections (Hidden by default) -->
+            <div id="addDentistSection" class="content-section" style="display: none;">
+                <h2>Add New Dentist</h2>
+                <p>Form to add a new dentist will go here.</p>
+            </div>
+
+            <div id="addTreatmentSection" class="content-section" style="display: none;">
+                <h2>Add New Treatment</h2>
+                <p>Form to add a new treatment will go here.</p>
+            </div>
+
+            <div id="addStaffSection" class="content-section" style="display: none;">
+                <h2>Add New Staff Member</h2>
+                <p>Form to add new staff will go here.</p>
             </div>
 
             <div id="helpSection" class="content-section" style="display: none;">
