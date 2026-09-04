@@ -179,33 +179,76 @@ function generateBill() {
         return;
     }
 
-    fetch("http://localhost:8080/api/billing", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ appointmentNumber: aptNo })
-    })
-    .then(async (response) => {
-        if(response.ok) {
-            const billData = await response.json();
-            
-            // Show Invoice
-            document.getElementById("invoiceArea").style.display = "block";
-            document.getElementById("invNumber").innerText = billData.invoiceNumber;
-            document.getElementById("invAptNumber").innerText = billData.appointmentNumber;
-            document.getElementById("invDate").innerText = new Date().toLocaleDateString();
-            document.getElementById("invTotal").innerText = billData.totalAmount.toFixed(2);
-            
-        } else {
-            const errData = await response.json();
-            alert("Error: " + errData.error);
-            document.getElementById("invoiceArea").style.display = "none";
+    // 1. Fetch Appointment Details (To get Treatment Name)
+    fetch(`http://localhost:8080/api/search?aptNo=${aptNo}`)
+    .then(async (searchRes) => {
+        if(!searchRes.ok) {
+            alert("Appointment details not found!");
+            return;
         }
+        const aptData = await searchRes.json();
+        // Get treatment name (handling both camelCase and snake_case)
+        const treatName = aptData.treatment_name || aptData.treatmentName || "Dental Treatment";
+
+        // 2. Fetch all treatments to get the exact breakdown prices
+        fetch("http://localhost:8080/api/treatments")
+        .then(async (treatRes) => {
+            const treatmentsList = await treatRes.json();
+            // Find the matching treatment from the list
+            const matchedTreatment = treatmentsList.find(t => t.treatmentName === treatName);
+
+            let tCost = 0;
+            let cFee = 0;
+
+            if (matchedTreatment) {
+                tCost = matchedTreatment.treatmentCost;
+                cFee = matchedTreatment.standardConsultationFee;
+            }
+
+            // 3. Generate Final Bill and Get Total
+            fetch("http://localhost:8080/api/billing", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ appointmentNumber: aptNo })
+            })
+            .then(async (response) => {
+                if(response.ok) {
+                    const billData = await response.json();
+
+                    // Safety Fallback Calculation: If treatment wasn't matched perfectly, calculate it from the total
+                    if (!matchedTreatment && billData.totalAmount) {
+                        cFee = 1500; // Standard Consultation Fee Default
+                        tCost = billData.totalAmount - cFee;
+                    }
+
+                    // Show Invoice Area
+                    document.getElementById("invoiceArea").style.display = "block";
+                    document.getElementById("invNumber").innerText = billData.invoiceNumber;
+                    document.getElementById("invAptNumber").innerText = billData.appointmentNumber || aptNo;
+                    document.getElementById("invDate").innerText = new Date().toLocaleDateString();
+                    
+                    // Set Exact Treatment Breakdown (No more NaN)
+                    document.getElementById("invTreatmentName").innerText = treatName;
+                    document.getElementById("invTreatmentCost").innerText = parseFloat(tCost).toFixed(2);
+                    document.getElementById("invConsultationFee").innerText = parseFloat(cFee).toFixed(2);
+                    document.getElementById("invTotal").innerText = parseFloat(billData.totalAmount).toFixed(2);
+                    
+                } else {
+                    const errData = await response.json();
+                    alert("Error: " + errData.error);
+                    document.getElementById("invoiceArea").style.display = "none";
+                }
+            })
+            .catch(error => {
+                console.error("Billing Error:", error);
+                alert("Cannot connect to the billing server.");
+            });
+        })
+        .catch(error => console.error("Treatments Error:", error));
     })
     .catch(error => {
-        console.error("Error:", error);
-        alert("Cannot connect to the server.");
+        console.error("Search Error:", error);
+        alert("Cannot connect to the server to fetch appointment details.");
     });
 }
 

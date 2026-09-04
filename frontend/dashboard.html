@@ -177,17 +177,34 @@
                 </div>
 
                 <!-- Printable Invoice Area -->
-                <div id="invoiceArea" style="display: none; background: white; padding: 30px; border: 1px solid #ccc; max-width: 500px; margin: 0 auto;">
-                    <h2 style="text-align: center; color: #2c3e50; border-bottom: none;">SUNRISE DENTAL CLINIC</h2>
-                    <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">No 12, Galle Road, Colombo | Tel: 011 234 5678</p>
-                    <hr style="margin-bottom: 20px;">
+                <div id="invoiceArea" style="display: none; background: white; padding: 30px; border: 1px solid #ccc; max-width: 500px; margin: 0 auto; margin-top: 20px;">
+                    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 5px;">SUNRISE DENTAL CLINIC</h2>
+                    <p style="text-align: center; color: #7f8c8d; margin-top: 0; margin-bottom: 20px;">No 12, Galle Road, Colombo | Tel: 011 234 5678</p>
+                    <hr style="margin-bottom: 20px; border: 0; border-top: 1px dashed #bdc3c7;">
+                    
                     <p><strong>Invoice No:</strong> <span id="invNumber"></span></p>
                     <p><strong>Appt No:</strong> <span id="invAptNumber"></span></p>
                     <p><strong>Date:</strong> <span id="invDate"></span></p>
-                    <hr style="margin: 20px 0;">
-                    <h3 style="text-align: right; color: #e74c3c;">Total Amount: LKR <span id="invTotal"></span></h3>
-                    <hr style="margin: 20px 0;">
-                    <p style="text-align: center; font-size: 12px;">Thank you for trusting Sunrise Dental Clinic!</p>
+                    
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #bdc3c7;">
+                    
+                    <!-- Treatment Breakdown Table -->
+                    <table style="width: 100%; text-align: left; font-size: 14px; margin-bottom: 10px;">
+                        <tr>
+                            <td style="padding: 8px 0; color: #2c3e50;"><strong>Treatment:</strong> <span id="invTreatmentName"></span></td>
+                            <td style="text-align: right; color: #2c3e50;">LKR <span id="invTreatmentCost"></span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #2c3e50;"><strong>Consultation Fee:</strong></td>
+                            <td style="text-align: right; color: #2c3e50;">LKR <span id="invConsultationFee"></span></td>
+                        </tr>
+                    </table>
+                    
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #bdc3c7;">
+                    <h3 style="text-align: right; color: #e74c3c; margin: 10px 0;">Total Amount: LKR <span id="invTotal"></span></h3>
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #bdc3c7;">
+                    
+                    <p style="text-align: center; font-size: 12px; color: #7f8c8d;">Thank you for trusting Sunrise Dental Clinic!</p>
                     
                     <button onclick="window.print()" class="btn-primary" style="margin-top: 20px; width: 100%; background-color: #27ae60;">Print Receipt</button>
                 </div>
@@ -383,26 +400,48 @@
             <!-- Help Section -->
             <div id="helpSection" class="content-section" style="display: none;">
                 <h2>System Instructions & Help Guide</h2>
-                <p style="color: #7f8c8d; margin-bottom: 20px;">Follow these instructions to navigate the Sunrise Dental Clinic Management System correctly.</p>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">Comprehensive guide to navigating the Sunrise Dental Clinic Management System.</p>
+
+                <!-- General Features -->
+                <h3 style="color: #2980b9; margin-top: 30px; border-bottom: 2px solid #ecf0f1; padding-bottom: 5px;">Receptionist & General Staff Operations</h3>
 
                 <div style="background: #e8f4f8; padding: 20px; border-left: 5px solid #3498db; margin-bottom: 20px; border-radius: 4px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">1. Registering an Appointment</h3>
-                    <p style="margin: 0; line-height: 1.6;">Go to the <strong>Register Appointment</strong> tab. Fill in all patient details accurately. Select the designated Dentist and Treatment type. The system will automatically prevent double bookings for the same dentist at the same time.</p>
+                    <h4 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">1. Registering an Appointment</h4>
+                    <p style="margin: 0; line-height: 1.6;">Navigate to <strong>Register Appointment</strong>. The Appointment Number is auto-generated for accuracy. Select the relevant Dentist and Treatment from the dynamically updated lists. The system automatically prevents double-bookings for the same time and doctor.</p>
                 </div>
 
                 <div style="background: #e8f4f8; padding: 20px; border-left: 5px solid #3498db; margin-bottom: 20px; border-radius: 4px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">2. Viewing Appointment Details</h3>
-                    <p style="margin: 0; line-height: 1.6;">Navigate to the <strong>View/Search Details</strong> tab. Enter the exact Appointment Number (e.g., APT-2026-0001) generated during registration to view the full patient profile, assigned doctor, and treatment status.</p>
+                    <h4 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">2. View/Search Appointments</h4>
+                    <p style="margin: 0; line-height: 1.6;">Use <strong>View/Search Details</strong> to see all scheduled, completed, and cancelled appointments in one place. You can also search for a specific patient's appointment using the exact ID (e.g., APT-2026-0001).</p>
                 </div>
 
                 <div style="background: #e8f4f8; padding: 20px; border-left: 5px solid #3498db; margin-bottom: 20px; border-radius: 4px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">3. Calculating & Printing Bills</h3>
-                    <p style="margin: 0; line-height: 1.6;">Select the <strong>Calculate & Print Bill</strong> tab. Enter the Appointment Number to automatically generate the invoice. The system merges standard consultation fees with specific treatment costs. Click <em>Print Receipt</em> to hand the physical copy to the patient.</p>
+                    <h4 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">3. Clinic Info & Pricing</h4>
+                    <p style="margin: 0; line-height: 1.6;">Check the <strong>Clinic Info & Pricing</strong> tab to quickly answer patient inquiries regarding available dentists, treatment descriptions, and accurate total estimated costs.</p>
                 </div>
-                
-                <div style="background: #fdf2e9; padding: 20px; border-left: 5px solid #e67e22; border-radius: 4px;">
-                    <h3 style="color: #d35400; margin-bottom: 10px; margin-top: 0;">Security Warning</h3>
-                    <p style="margin: 0; line-height: 1.6;">Always click the <strong>Exit System</strong> button from the left menu before leaving the front desk to ensure unauthorized personnel cannot access patient records.</p>
+
+                <div style="background: #e8f4f8; padding: 20px; border-left: 5px solid #3498db; margin-bottom: 20px; border-radius: 4px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0;">4. Calculating & Printing Bills</h4>
+                    <p style="margin: 0; line-height: 1.6;">Enter the Appointment Number in the <strong>Calculate & Print Bill</strong> section. The system safely merges consultation fees with exact treatment costs to generate an invoice. Click <em>Print Receipt</em> to generate a clean, paper-ready bill for the patient.</p>
+                </div>
+
+                <!-- Admin Features -->
+                <h3 style="color: #d35400; margin-top: 30px; border-bottom: 2px solid #fdf2e9; padding-bottom: 5px;">Administrator Features (System Admins Only)</h3>
+
+                <div style="background: #fdf2e9; padding: 20px; border-left: 5px solid #e67e22; margin-bottom: 20px; border-radius: 4px;">
+                    <h4 style="color: #d35400; margin-bottom: 10px; margin-top: 0;">System Management (Dentists, Treatments, Staff)</h4>
+                    <p style="margin: 0; line-height: 1.6;">Admins have exclusive access to manage clinic records from the sidebar. You can Add, Edit, or Delete Dentists, Treatments, and Staff members. Note: Deleting a dentist or treatment safely archives them (Soft Delete) to protect existing patient appointment records.</p>
+                </div>
+
+                <div style="background: #fdf2e9; padding: 20px; border-left: 5px solid #e67e22; margin-bottom: 20px; border-radius: 4px;">
+                    <h4 style="color: #d35400; margin-bottom: 10px; margin-top: 0;">Reschedule or Cancel Appointments</h4>
+                    <p style="margin: 0; line-height: 1.6;">In the <strong>View/Search Details</strong> section, Admins will see exclusive "Edit" and "Cancel" buttons next to all appointments to manage clinic schedules and handle patient cancellations directly.</p>
+                </div>
+
+                <!-- Security -->
+                <div style="background: #f9ebea; padding: 20px; border-left: 5px solid #c0392b; border-radius: 4px; margin-top: 30px;">
+                    <h3 style="color: #c0392b; margin-bottom: 10px; margin-top: 0;">Security Warning</h3>
+                    <p style="margin: 0; line-height: 1.6;">Always click the <strong>Exit System</strong> button from the left menu before leaving the front desk to ensure unauthorized personnel cannot access patient records or administrative controls.</p>
                 </div>
             </div>
 

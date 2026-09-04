@@ -213,3 +213,26 @@ select {
 .data-table tbody tr:hover {
     background-color: #f4f6f7;
 }
+
+/* --- Print Bill Styling --- */
+@media print {
+    body * {
+        visibility: hidden; /* Hide everything by default */
+    }
+    #invoiceArea, #invoiceArea * {
+        visibility: visible; /* Show only the invoice area */
+    }
+    #invoiceArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        border: none;
+        box-shadow: none;
+    }
+    #invoiceArea button {
+        display: none; /* Hide the 'Print Receipt' button on the actual paper */
+    }
+}
