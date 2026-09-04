@@ -197,9 +197,36 @@
                 </form>
             </div>
 
+            <!-- Admin: Add Staff Section -->
             <div id="addStaffSection" class="content-section" style="display: none;">
                 <h2>Add New Staff Member</h2>
-                <p>Form to add new staff will go here.</p>
+                <form id="addStaffForm" class="dashboard-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Full Name</label>
+                            <input type="text" id="newStaffName" required placeholder="e.g., Nimali Perera">
+                        </div>
+                        <div class="input-group">
+                            <label>Role</label>
+                            <select id="newStaffRole" required>
+                                <option value="RECEPTIONIST">Receptionist</option>
+                                <option value="ADMIN">System Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Username (For Login)</label>
+                            <input type="text" id="newStaffUsername" required placeholder="Enter unique username">
+                        </div>
+                        <div class="input-group">
+                            <label>Password</label>
+                            <input type="password" id="newStaffPassword" required placeholder="Enter login password">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Staff Member</button>
+                </form>
             </div>
 
             <div id="helpSection" class="content-section" style="display: none;">

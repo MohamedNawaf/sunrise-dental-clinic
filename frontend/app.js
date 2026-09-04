@@ -277,3 +277,42 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+// --- Add Staff API Call (Admin Only) ---
+document.addEventListener("DOMContentLoaded", function() {
+    const addStaffForm = document.getElementById("addStaffForm");
+    
+    if(addStaffForm) {
+        addStaffForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const staffData = {
+                fullName: document.getElementById("newStaffName").value,
+                role: document.getElementById("newStaffRole").value,
+                username: document.getElementById("newStaffUsername").value,
+                password: document.getElementById("newStaffPassword").value
+            };
+
+            fetch("http://localhost:8080/api/staff", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(staffData)
+            })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    alert("Success: Staff member successfully added!");
+                    addStaffForm.reset();
+                } else {
+                    const resData = await response.json();
+                    alert("Error: " + (resData.error || "Failed to add staff member."));
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Cannot connect to the server.");
+            });
+        });
+    }
+});
