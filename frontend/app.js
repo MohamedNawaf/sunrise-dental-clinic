@@ -200,3 +200,41 @@ function generateBill() {
         alert("Cannot connect to the server.");
     });
 }
+
+// --- Add Dentist API Call (Admin Only) ---
+document.addEventListener("DOMContentLoaded", function() {
+    const addDentistForm = document.getElementById("addDentistForm");
+    
+    if(addDentistForm) {
+        addDentistForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const dentistData = {
+                dentistName: document.getElementById("newDentistName").value,
+                contactNumber: document.getElementById("newDentistContact").value,
+                specialization: document.getElementById("newDentistSpec").value
+            };
+
+            fetch("http://localhost:8080/api/dentists", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dentistData)
+            })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    alert("Success: Dentist successfully added!");
+                    addDentistForm.reset();
+                } else {
+                    const resData = await response.json();
+                    alert("Error: " + (resData.error || "Failed to add dentist."));
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Cannot connect to the server.");
+            });
+        });
+    }
+});

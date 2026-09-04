@@ -147,9 +147,27 @@
             </div>
 
             <!-- Admin Sections (Hidden by default) -->
+            <!-- Admin: Add Dentist Section -->
             <div id="addDentistSection" class="content-section" style="display: none;">
                 <h2>Add New Dentist</h2>
-                <p>Form to add a new dentist will go here.</p>
+                <form id="addDentistForm" class="dashboard-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Dentist Full Name</label>
+                            <input type="text" id="newDentistName" required placeholder="e.g., Dr. Kamal Perera">
+                        </div>
+                        <div class="input-group">
+                            <label>Contact Number</label>
+                            <input type="text" id="newDentistContact" required placeholder="07XXXXXXXX">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Specialization</label>
+                        <input type="text" id="newDentistSpec" required placeholder="e.g., General Dentist, Orthodontist">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Dentist</button>
+                </form>
             </div>
 
             <div id="addTreatmentSection" class="content-section" style="display: none;">
