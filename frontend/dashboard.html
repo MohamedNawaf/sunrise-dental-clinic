@@ -242,9 +242,12 @@
                 </table>
             </div>
 
-            <!-- Admin: Add Staff Section -->
+            <!-- Admin: Add & Manage Staff Section -->
             <div id="addStaffSection" class="content-section" style="display: none;">
-                <h2>Add New Staff Member</h2>
+                <h2>Manage Staff</h2>
+                
+                <input type="hidden" id="editStaffId" value="">
+
                 <form id="addStaffForm" class="dashboard-form">
                     <div class="form-row">
                         <div class="input-group">
@@ -266,12 +269,31 @@
                         </div>
                         <div class="input-group">
                             <label>Password</label>
-                            <input type="password" id="newStaffPassword" required placeholder="Enter login password">
+                            <input type="password" id="newStaffPassword" placeholder="Leave blank to keep current password">
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Staff Member</button>
+                    <button type="submit" id="saveStaffBtn" class="btn-primary" style="margin-top: 15px; background-color: #f39c12;">Save Staff Member</button>
+                    <button type="button" id="cancelEditStaffBtn" class="btn-secondary" style="margin-top: 15px; display: none;" onclick="resetStaffForm()">Cancel Edit</button>
                 </form>
+
+                <hr style="margin: 30px 0; border: 1px solid #bdc3c7;">
+                
+                <h3>Current Staff Members</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                        <!-- Data will be loaded here dynamically -->
+                    </tbody>
+                </table>
             </div>
 
             <!-- Help Section -->

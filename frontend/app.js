@@ -422,35 +422,110 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// --- Add Staff API Call (Admin Only) ---
-document.addEventListener("DOMContentLoaded", function() {
-    const addStaffForm = document.getElementById("addStaffForm");
+// ==========================================
+// --- MANAGE STAFF (Admin Only) ---
+// ==========================================
+
+function loadStaff() {
+    fetch("http://localhost:8080/api/staff")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("staffTableBody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            data.forEach((staff, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${staff.fullName}</td>
+                    <td>${staff.username}</td>
+                    <td><span style="background:#e8f4f8; padding:3px 8px; border-radius:12px; font-size:12px; color:#2980b9; font-weight:bold;">${staff.role}</span></td>
+                    <td>
+                        <button onclick="editStaff(${staff.id}, '${staff.fullName}', '${staff.role}', '${staff.username}')" style="background:#3498db; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; font-weight:bold;">Edit</button>
+                        <button onclick="deleteStaff(${staff.id})" style="background:#e74c3c; color:white; border:none; padding:6px 12px; cursor:pointer; border-radius:4px; margin-left:5px; font-weight:bold;">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    })
+    .catch(error => console.error("Error loading staff:", error));
+}
+
+function resetStaffForm() {
+    document.getElementById("addStaffForm").reset();
+    document.getElementById("editStaffId").value = "";
+    // Re-add required attribute for password since it's a new entry
+    document.getElementById("newStaffPassword").setAttribute("required", "true");
+    document.getElementById("saveStaffBtn").innerText = "Save Staff Member";
+    document.getElementById("cancelEditStaffBtn").style.display = "none";
+}
+
+function editStaff(id, name, role, username) {
+    document.getElementById("editStaffId").value = id;
+    document.getElementById("newStaffName").value = name;
+    document.getElementById("newStaffRole").value = role;
+    document.getElementById("newStaffUsername").value = username;
     
+    // Remove required for password during edit (so they can leave it blank)
+    document.getElementById("newStaffPassword").removeAttribute("required");
+    document.getElementById("newStaffPassword").value = ""; 
+    
+    document.getElementById("saveStaffBtn").innerText = "Update Staff";
+    document.getElementById("cancelEditStaffBtn").style.display = "inline-block";
+    window.scrollTo(0, 0); 
+}
+
+function deleteStaff(id) {
+    if(confirm("Are you sure you want to remove this staff member?")) {
+        fetch(`http://localhost:8080/api/staff?id=${id}`, { method: 'DELETE' })
+        .then(response => {
+            if(response.ok) {
+                alert("Staff removed successfully!");
+                loadStaff();
+            } else {
+                alert("Failed to delete staff.");
+            }
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    if(sessionStorage.getItem("userRole") === "ADMIN") {
+        setTimeout(loadStaff, 500); 
+    }
+
+    const addStaffForm = document.getElementById("addStaffForm");
     if(addStaffForm) {
         addStaffForm.addEventListener("submit", function(event) {
             event.preventDefault();
 
+            const id = document.getElementById("editStaffId").value;
+            const method = id ? "PUT" : "POST";
+            
             const staffData = {
                 fullName: document.getElementById("newStaffName").value,
                 role: document.getElementById("newStaffRole").value,
                 username: document.getElementById("newStaffUsername").value,
                 password: document.getElementById("newStaffPassword").value
             };
+            
+            if(id) {
+                staffData.id = parseInt(id);
+            }
 
             fetch("http://localhost:8080/api/staff", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                method: method,
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(staffData)
             })
-            .then(async (response) => {
-                if (response.status === 201) {
-                    alert("Success: Staff member successfully added!");
-                    addStaffForm.reset();
+            .then(response => {
+                if (response.ok || response.status === 201) {
+                    alert(id ? "Success: Staff updated!" : "Success: Staff added!");
+                    resetStaffForm();
+                    loadStaff(); 
                 } else {
-                    const resData = await response.json();
-                    alert("Error: " + (resData.error || "Failed to add staff member."));
+                    alert("Error: Username might already exist.");
                 }
             })
             .catch(error => {
