@@ -16,7 +16,7 @@
             </div>
             <ul class="nav-links">
                 <!-- Menu for Staff & Admin -->
-                <li><a href="#" class="active" onclick="showSection('registerSection')">Register Appointment</a></li>
+                <li><a href="#" class="active" onclick="showSection('registerSection'); loadAppointmentDropdowns(); fetchNextAppointmentNumber();">Register Appointment</a></li>
                 <li><a href="#" onclick="showSection('searchSection'); loadAllAppointments();">View/Search Details</a></li>
                 <li><a href="#" onclick="showSection('billingSection')">Calculate & Print Bill</a></li>
                 <li><a href="#" onclick="showSection('clinicInfoSection'); loadClinicInfo();">Clinic Info & Pricing</a></li>

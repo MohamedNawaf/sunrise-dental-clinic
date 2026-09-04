@@ -43,7 +43,10 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     
     if(window.location.pathname.includes("dashboard.html")) {
-        
+
+        setTimeout(loadAppointmentDropdowns, 300);
+        setTimeout(fetchNextAppointmentNumber, 300);
+
         if(sessionStorage.getItem("isLoggedIn") !== "true") {
             window.location.href = "index.html";
         }
@@ -113,7 +116,11 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(async (response) => {
                 if (response.status === 201) {
                     alert("Success: Appointment successfully registered!");
-                    appointmentForm.reset(); // Success unama form eka clear kireema
+                    appointmentForm.reset(); // Form eka clear wenawa
+                    loadAppointmentDropdowns(); // Aluth number ekai dropdowns ui apahu load wenawa
+                    if (typeof loadAllAppointments === "function") {
+                        loadAllAppointments(); // Appointments table ekath update wenawa
+                    }
                 } else {
                     const resData = await response.json();
                     alert("Error: " + (resData.error || "Failed to register appointment."));
@@ -536,7 +543,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// --- Load Dynamic Dropdowns for Appointment Registration ---
+// --- Load Dynamic Dropdowns & Auto-Generate Appointment Number ---
 function loadAppointmentDropdowns() {
     // 1. Load Active Dentists
     fetch("http://localhost:8080/api/dentists")
@@ -550,7 +557,7 @@ function loadAppointmentDropdowns() {
             });
         }
     })
-    .catch(error => console.error("Error loading dentists for dropdown:", error));
+    .catch(error => console.error("Error loading dentists:", error));
 
     // 2. Load Treatments
     fetch("http://localhost:8080/api/treatments")
@@ -564,15 +571,19 @@ function loadAppointmentDropdowns() {
             });
         }
     })
-    .catch(error => console.error("Error loading treatments for dropdown:", error));
-}
+    .catch(error => console.error("Error loading treatments:", error));
 
-// Call dropdown function when dashboard loads
-document.addEventListener("DOMContentLoaded", function() {
-    if(window.location.pathname.includes("dashboard.html")) {
-        setTimeout(loadAppointmentDropdowns, 500); // Load dynamic data
-    }
-});
+    // 3. Auto-Generate Next Appointment Number
+    fetch("http://localhost:8080/api/appointments?action=nextNumber")
+    .then(response => response.json())
+    .then(data => {
+        const aptInput = document.getElementById("aptNumber");
+        if(aptInput && data.nextNumber) {
+            aptInput.value = data.nextNumber;
+        }
+    })
+    .catch(error => console.error("Error generating apt number:", error));
+}
 
 // ==========================================
 // --- CLINIC INFO & PRICING (All Roles) ---
@@ -792,4 +803,17 @@ function saveAppointmentUpdate() {
             alert("Failed to update appointment.");
         }
     });
+}
+
+function fetchNextAppointmentNumber() {
+    fetch("http://localhost:8080/api/appointments?action=nextNumber")
+    .then(response => response.json())
+    .then(data => {
+        const aptInput = document.getElementById("aptNumber");
+        if(aptInput && data.nextNumber) {
+            aptInput.value = data.nextNumber;
+            console.log("Successfully loaded next number: " + data.nextNumber);
+        }
+    })
+    .catch(error => console.error("Error fetching number:", error));
 }

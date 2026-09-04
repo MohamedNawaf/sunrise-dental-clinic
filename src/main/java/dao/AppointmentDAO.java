@@ -113,4 +113,31 @@ public class AppointmentDAO {
             return false;
         }
     }
+
+    public String getNextAppointmentNumber() {
+        int currentYear = java.time.Year.now().getValue();
+        String prefix = "APT-" + currentYear + "-";
+        String query = "SELECT MAX(appointment_number) FROM tbl_appointments WHERE appointment_number LIKE ?";
+
+        try (java.sql.Connection conn = DatabaseConnection.getInstance().getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, prefix + "%");
+            try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getString(1) != null) {
+                    String lastNumber = rs.getString(1);
+                    // Extract the last 4 digits (e.g., from APT-2026-0003 gets 0003)
+                    String[] parts = lastNumber.split("-");
+                    int nextId = Integer.parseInt(parts[2]) + 1;
+                    return prefix + String.format("%04d", nextId); // Pad with zeros to make it 4 digits
+                } else {
+                    // First appointment of the year
+                    return prefix + "0001";
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return prefix + "0000"; // Fallback in case of error
+        }
+    }
 }

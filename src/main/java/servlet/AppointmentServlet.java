@@ -66,7 +66,14 @@ public class AppointmentServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setContentType("application/json");
 
-        java.util.List<model.AppointmentDetailsDTO> appointments = appointmentDAO.getAllAppointments();
-        response.getWriter().write(gson.toJson(appointments));
+        String action = request.getParameter("action");
+
+        if ("nextNumber".equals(action)) {
+            String nextNumber = appointmentDAO.getNextAppointmentNumber();
+            response.getWriter().write("{\"nextNumber\": \"" + nextNumber + "\"}");
+        } else {
+            java.util.List<model.AppointmentDetailsDTO> appointments = appointmentDAO.getAllAppointments();
+            response.getWriter().write(gson.toJson(appointments));
+        }
     }
 }
